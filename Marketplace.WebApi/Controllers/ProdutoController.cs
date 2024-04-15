@@ -1,4 +1,6 @@
 ﻿using Marketplace.Application.Services;
+using Marketplace.Domain.Entities;
+using Marketplace.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,40 +10,45 @@ namespace Marketplace.WebApi.Controllers
     [ApiController]
     public class ProdutoController : ControllerBase
     {
-        private readonly ProdutoService _produtoService;
-        public ProdutoController(ProdutoService produtoService)
+        private readonly IProdutoService _produtoService;
+
+        public ProdutoController(IProdutoService produtoService)
         {
             _produtoService = produtoService;
         }
 
         [HttpGet]
-        public async void ObterProdutos()
+        public async Task<IActionResult> GetAllAsync()
         {
-            await _produtoService.ObterProdutos();
-        }
+            var resultado = await _produtoService.ObterTodos();
 
-        [HttpGet]
-        public async void ObterProduto()
-        {
-            await _produtoService.ObterProduto();
+            if (resultado is null || !resultado.Any())
+            {
+                return Ok(new List<Produto>());
+            }
+
+            return Ok(resultado);
         }
 
         [HttpPost]
-        public async void CriarProduto()
+        public async Task<IActionResult> CreateAsync(Produto produto)
         {
-            await _produtoService.CriarProduto();
+            await _produtoService.CreateAsync(produto);
+            return Created();
         }
 
         [HttpDelete]
-        public async void ExcluirProduto()
+        public async Task<IActionResult> DeleteAsync([FromQuery] int id)
         {
-            await _produtoService.ExcluirProduto();
+            await _produtoService.DeleteAsync(id);
+            return NoContent();
         }
 
-        [HttpPut]
-        public async void AtualizarProduto()
+        [HttpPost]
+        public async Task<IActionResult> UpdateAsync(Produto produto)
         {
-            await _produtoService.AtualizarProduto();
+            await _produtoService.UpdateAsync(produto);
+            return Ok(produto);
         }
     }
 }
