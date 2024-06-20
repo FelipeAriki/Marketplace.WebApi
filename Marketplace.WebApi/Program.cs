@@ -4,7 +4,6 @@ using Marketplace.Domain.Interfaces;
 using Marketplace.Domain.Repository;
 using Npgsql;
 using System.Data;
-using System.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
